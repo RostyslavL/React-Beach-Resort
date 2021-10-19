@@ -18,7 +18,7 @@ class RoomProvider extends React.Component  {
        maxPrice:0,
        minSize:0,
        maxSize:0,
-       breackfast:false,
+       breakfast:false,
        pets:false,
     } 
 
@@ -60,7 +60,7 @@ class RoomProvider extends React.Component  {
     handleChange = (event) => {
         const target = event.target
         const name = event.target.name
-        const value = event.type === 'checkbox' ? target.checked : target.value
+        const value = target.type === 'checkbox' ? target.checked : target.value
         this.setState({
             [name]: value
         },this.filterRooms)
@@ -76,7 +76,7 @@ class RoomProvider extends React.Component  {
             maxPrice,
             minSize,
             maxSize,
-            breackfast,
+            breakfast,
             pets
         } = this.state
         // all the rooms
@@ -94,6 +94,16 @@ class RoomProvider extends React.Component  {
         }
         // filter by price
         tempRooms = tempRooms.filter(room => room.price <= price)
+        // checking size
+        tempRooms = tempRooms.filter(room => room.size >= minSize && room.size <= maxSize)
+        // checking breakfast
+        if(breakfast){
+            tempRooms = tempRooms.filter(room => room.breakfast === true)
+        }
+        // checking pets
+        if(pets){
+            tempRooms = tempRooms.filter(room => room.pets === true)
+        }
         // change state
         this.setState({
             sortedRooms: tempRooms
