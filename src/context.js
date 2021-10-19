@@ -10,7 +10,16 @@ class RoomProvider extends React.Component  {
        rooms: [],
        sortedRooms: [],
        featuredRooms: [],
-       loading: true
+       loading: true,
+       type:'all',
+       capacity:1,
+       price:0,
+       minPrice:0,
+       maxPrice:0,
+       minSize:0,
+       maxSize:0,
+       breackfast:false,
+       pets:false,
     } 
 
     // getData
@@ -18,12 +27,17 @@ class RoomProvider extends React.Component  {
     componentDidMount(){
         let rooms = this.formatData(items)
         let featuredRooms = rooms.filter((room) => room.featured === true)
+        let maxPrice = Math.max(...rooms.map((item) => item.price))
+        let maxSize = Math.max(...rooms.map((item) => item.size))
         this.setState({
             rooms,
             featuredRooms,
             sortedRooms: rooms,
             // loading:true
-            loading:false
+            loading:false,
+            price:maxPrice,
+            maxPrice,
+            maxSize
         })
     }
 
@@ -42,11 +56,45 @@ class RoomProvider extends React.Component  {
         const room  = tempRooms.find((room) => room.slug === slug)
         return room
     }
+
+    handleChange = (event) => {
+        const target = event.target
+        const name = event.target.name
+        const value = event.type === 'checkbox' ? target.checked : target.value
+        this.setState({
+            [name]: value
+        },this.filterRooms)
+    }
+
+    filterRooms = () =>{
+        let{
+            rooms, 
+            type,
+            capacity,
+            price,
+            minPrice,
+            maxPrice,
+            minSize,
+            maxSize,
+            breackfast,
+            pets
+        } = this.state
+        let tempRooms = [...rooms]
+        if(type !== 'all'){
+            tempRooms = tempRooms.filter(rooms => rooms.type === type)
+        }
+        this.setState({
+            sortedRooms: tempRooms
+        })
+    }
+    
+
     render() {
         return (
             <RoomContext.Provider value={{
                 ...this.state, 
-                getRoom: this.getRoom
+                getRoom: this.getRoom,
+                handleChange: this.handleChange
             }}>
                 {this.props.children}
             </RoomContext.Provider>
